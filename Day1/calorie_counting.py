@@ -12,3 +12,6 @@ with open('input.txt','r') as input:
 calorie_totals = [sum(elf) for elf in elves]
 
 print(max(calorie_totals))
+
+# Star 2
+print(sum(sorted(calorie_totals)[-3:]))
