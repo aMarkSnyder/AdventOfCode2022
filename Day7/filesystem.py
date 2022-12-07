@@ -80,3 +80,12 @@ file_sizes = get_sizes(filesystem) + [filesystem.size]
 # Star 1
 print(sum([file_size for file_size in file_sizes if file_size <= 100000]))
 
+# Star 2
+file_sizes = sorted(file_sizes)
+required_space = 30000000
+existing_space = 70000000 - file_sizes[-1]
+min_size_to_delete = required_space - existing_space
+for file_size in file_sizes:
+    if file_size >= min_size_to_delete:
+        print(file_size)
+        break
