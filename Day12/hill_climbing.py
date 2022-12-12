@@ -28,7 +28,7 @@ def pop_node(pq, entry_finder):
             return distance,node
     raise KeyError('pop from an empty priority queue')
 
-def get_neighbors(heights,node):
+def get_neighbors(heights,node,direction='up'):
     height,width = heights.shape
     node = np.array(node)
     neighbors = []
@@ -41,6 +41,8 @@ def get_neighbors(heights,node):
     distances = []
     for neighbor in neighbors:
         distance = heights[neighbor] - heights[node]
+        if direction == 'down':
+            distance = -distance
         if distance > 1:
             distance = np.inf
         else:
@@ -53,27 +55,7 @@ def get_neighbors(heights,node):
     
     return neighbors,distances
 
-# function Dijkstra(Graph, source):
-#  2      
-#  3      for each vertex v in Graph.Vertices:
-#  4          dist[v] ← INFINITY
-#  5          prev[v] ← UNDEFINED
-#  6          add v to Q
-#  7      dist[source] ← 0
-#  8      
-#  9      while Q is not empty:
-# 10          u ← vertex in Q with min dist[u]
-# 11          remove u from Q
-# 12          
-# 13          for each neighbor v of u still in Q:
-# 14              alt ← dist[u] + Graph.Edges(u, v)
-# 15              if alt < dist[v]:
-# 16                  dist[v] ← alt
-# 17                  prev[v] ← u
-# 18
-# 19      return dist[], prev[]
-
-def Dijkstra(heights, source):
+def Dijkstra(heights, source, direction='up'):
 
     distances = np.inf*np.ones_like(heights)
     distances[source] = 0
@@ -92,7 +74,7 @@ def Dijkstra(heights, source):
         except:
             break
 
-        neighbors, neighbor_dists = get_neighbors(heights,closest_node)
+        neighbors, neighbor_dists = get_neighbors(heights,closest_node,direction)
         for neighbor,neighbor_dist in zip(neighbors,neighbor_dists):
             if neighbor not in entry_finder:
                 continue
@@ -121,3 +103,7 @@ heights = np.array(heights)
 # Star 1
 distances,previous = Dijkstra(heights,start)
 print(distances[end])
+
+# Star 2
+distances,previous = Dijkstra(heights,end,direction='down')
+print(np.min(distances[heights==0]))
