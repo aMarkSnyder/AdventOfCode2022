@@ -1,3 +1,5 @@
+from functools import cmp_to_key
+
 def is_correct_order(left,right):
     if isinstance(left,int) and isinstance(right,int):
         if left < right:
@@ -28,3 +30,12 @@ for idx,pair in enumerate(pairs):
 
 # Star 1
 print(sum(correct_order))
+
+# Star 2
+packets = [[[2]],[[6]]]
+for pair in pairs:
+    left,right = [eval(line) for line in pair if line != '']
+    packets.append(left)
+    packets.append(right)
+packets = sorted(packets,reverse=True,key=cmp_to_key(is_correct_order))
+print((packets.index([[2]])+1) * (packets.index([[6]])+1))
