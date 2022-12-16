@@ -24,7 +24,7 @@ def BFS(valves, start_valve):
                 queue.append(neighbor)
     return {valve:len(path_to[valve]) for valve in valves}
 
-def generate_valid_routes(all_paths,curr_path,curr_valve,valuable_valves,visited_valves,distances,dest_valve,time,max_time):
+def generate_valid_routes(all_paths,curr_path,curr_valve,valuable_valves,visited_valves,distances,time,max_time):
     if time >= max_time:
         all_paths.add(tuple(curr_path))
         return
@@ -36,8 +36,7 @@ def generate_valid_routes(all_paths,curr_path,curr_valve,valuable_valves,visited
     curr_path = curr_path + [curr_valve]
     visited_valves = visited_valves.union({curr_valve})
     for valve in valuable_valves-visited_valves:
-        generate_valid_routes(all_paths,curr_path,valve,valuable_valves,visited_valves,distances,dest_valve,time+distances[curr_valve][valve],max_time)
-    curr_path = curr_path[:-1]
+        generate_valid_routes(all_paths,curr_path,valve,valuable_valves,visited_valves,distances,time+distances[curr_valve][valve],max_time)
 
 def calculate_route_value(valves,distances,route,max_time,verbose=False):
     time = 0
@@ -71,8 +70,9 @@ distances = {}
 for valve in valves:
     distances[valve] = BFS(valves,valve)
 
+# Star 1
 valuable_routes = set()
-generate_valid_routes(valuable_routes,[],'AA',valuable_valves,set(),distances,valve,0,30)
+generate_valid_routes(valuable_routes,[],'AA',valuable_valves,set(),distances,0,30)
 
 max_value = 0
 for route in valuable_routes:
@@ -80,3 +80,18 @@ for route in valuable_routes:
     if value > max_value:
         max_value = value
 print(max_value)
+
+# Star 2
+valuable_routes = set()
+generate_valid_routes(valuable_routes,[],'AA',valuable_valves,set(),distances,0,26)
+valuable_routes = list(valuable_routes)
+
+max_no_overlap_score = 0
+for idx,route in enumerate(valuable_routes):
+    for route2 in valuable_routes[idx:]:
+        if len(set(route).intersection(set(route2))) == 1:
+            route_score = calculate_route_value(valves,distances,route,26)
+            route2_score = calculate_route_value(valves,distances,route2,26)
+            if route_score + route2_score > max_no_overlap_score:
+                max_no_overlap_score = route_score + route2_score
+print(max_no_overlap_score)
