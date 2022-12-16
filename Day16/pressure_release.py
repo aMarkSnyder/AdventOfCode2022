@@ -26,9 +26,10 @@ def BFS(valves, start_valve):
 
 def generate_valid_routes(all_paths,curr_path,curr_valve,valuable_valves,visited_valves,distances,dest_valve,time,max_time):
     if time >= max_time:
+        all_paths.add(tuple(curr_path))
         return
-    if curr_valve == dest_valve:
-        all_paths.append(curr_path+[curr_valve])
+    if set([curr_valve]) == valuable_valves-visited_valves:
+        all_paths.add(tuple(curr_path+[curr_valve]))
         return
     if curr_valve in visited_valves:
         return
@@ -70,11 +71,8 @@ distances = {}
 for valve in valves:
     distances[valve] = BFS(valves,valve)
 
-valuable_routes = []
-for valve in valuable_valves:
-    routes = []
-    generate_valid_routes(routes,[],'AA',valuable_valves,set(),distances,valve,0,30)
-    valuable_routes.extend(routes)
+valuable_routes = set()
+generate_valid_routes(valuable_routes,[],'AA',valuable_valves,set(),distances,valve,0,30)
 
 max_value = 0
 for route in valuable_routes:
