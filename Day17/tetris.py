@@ -33,11 +33,6 @@ def valid(chamber,candidate_places):
 
 def drop_piece(chamber,current_depth,piece_gen,jet_gen,cache,piece_no,v=False):
 
-    if not piece_no:
-        initial_state = tuple([0,0,0,0,0,0,0])
-    else:
-        initial_state = tuple(chamber[current_depth])
-
     start_point = np.array((current_depth-4,2))
     piece,_ = next(piece_gen)
 
@@ -57,15 +52,16 @@ def drop_piece(chamber,current_depth,piece_gen,jet_gen,cache,piece_no,v=False):
     for space in current_spaces:
         chamber[space] = 1
 
-    final_state = tuple(chamber[new_depth])
-    states = tuple([initial_state,final_state])
-    if v and states in cache and initial_state != final_state:
-        print('possible cycle of length', piece_no-cache[states],'pieces')
-    cache[states] = piece_no
+    if chamber.shape[0]-new_depth >= 20:
+        state = str(chamber[new_depth:new_depth+20])
+        if v and state in cache:
+            print('possible cycle of length', piece_no-cache[state],'pieces detected at piece number',piece_no \
+                ,'and old piece number',cache[state])
+        cache[state] = piece_no
 
     return new_depth, last_jet_idx
 
-with open('input_test1.txt','r') as input_file:
+with open('input.txt','r') as input_file:
     jets = input_file.readlines()[0][:-1]
 
 piece_gen = piece_generator()
@@ -84,25 +80,15 @@ jet_gen = jet_generator(jets)
 chamber = np.zeros((10000,7))
 current_depth = 10000
 cache = {}
-for piece_no in range(300):
-    current_depth,_ = drop_piece(chamber,current_depth,piece_gen,jet_gen,cache,piece_no,True)
-cycle_block_length = 35 # by inspection
-
-test_length = 8
-cycle_start_depth = 0
-cycle_lengths = set()
-for row_idx in range(current_depth,chamber.shape[0]-test_length):
-    test_array = chamber[row_idx:row_idx+test_length]
-    for offset in range(test_length,chamber.shape[0]-test_length-row_idx):
-        if (test_array == chamber[row_idx+offset:row_idx+offset+test_length]).all():
-            print('likely cycle of height',offset)
-            cycle_lengths.add(offset)
-            cycle_start_depth = row_idx+test_length+offset-1
-cycle_height = 53 # by inspection
-print(cycle_start_depth)
+depths = []
+for piece_no in range(2500):
+    current_depth,_ = drop_piece(chamber,current_depth,piece_gen,jet_gen,cache,piece_no,v=False)
+    depths.append(current_depth)
+cycle_block_length = 1705 # by inspection with verbose flag above
+cycle_height = depths[626]-depths[2331] # by inspection
 
 elephant_requested_blocks = 1000000000000
-num_cycles = elephant_requested_blocks // cycle_block_length - 10 # fudge factor since idk how many blocks the startup takes
+num_cycles = elephant_requested_blocks // cycle_block_length - 2 # fudge factor
 
 blocks_remaining = elephant_requested_blocks - num_cycles*cycle_block_length
 
