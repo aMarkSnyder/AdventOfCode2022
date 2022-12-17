@@ -53,8 +53,6 @@ def drop_piece(chamber,current_depth,piece_gen,jet_gen):
 
     return new_depth
 
-np.set_printoptions(linewidth=100)
-
 with open('input.txt','r') as input_file:
     jets = input_file.readlines()[0][:-1]
 
