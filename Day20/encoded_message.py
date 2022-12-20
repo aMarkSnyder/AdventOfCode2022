@@ -1,5 +1,10 @@
 """P"""
 
+def mix(idx_map,nums):
+    """p"""
+    for old_idx,num in enumerate(nums):
+        move(idx_map,old_idx,num)
+
 def move(idx_map,old_idx,num):
     """p"""
     len_nums = len(idx_map)
@@ -27,15 +32,27 @@ def get_new_nums(nums,idx_map):
 
 def main():
     """p"""
-    with open('input.txt','r') as input_file:
+    with open('input.txt','r',encoding='utf8') as input_file:
         nums = input_file.readlines()
 
     nums = [int(num) for num in nums]
     nums_len = len(nums)
-    # Old:new index map
+
+    # Star 1
     idx_map = {idx:idx for idx in range(nums_len)}
-    for old_idx,num in enumerate(nums):
-        move(idx_map,old_idx,num)
+    mix(idx_map,nums)
+    new_nums = get_new_nums(nums,idx_map)
+    zero_idx = new_nums.index(0)
+    grove_coords = [new_nums[(zero_idx+offset)%nums_len] for offset in [1000,2000,3000]]
+    print('1000th, 2000th, 3000th numbers after 0 are',grove_coords)
+    print('their sum is',sum(grove_coords))
+
+    # Star 2
+    decryption_key = 811589153
+    nums = [num*decryption_key for num in nums]
+    idx_map = {idx:idx for idx in range(nums_len)}
+    for _ in range(10):
+        mix(idx_map,nums)
     new_nums = get_new_nums(nums,idx_map)
     zero_idx = new_nums.index(0)
     grove_coords = [new_nums[(zero_idx+offset)%nums_len] for offset in [1000,2000,3000]]
